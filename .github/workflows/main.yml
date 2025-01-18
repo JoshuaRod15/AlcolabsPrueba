@@ -27,4 +27,4 @@ jobs:
 
       # 4. Publicar la imagen en Docker Hub
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/alcolabsinventory:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/alcolabsinventory:latest
