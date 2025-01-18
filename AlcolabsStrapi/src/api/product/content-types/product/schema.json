@@ -44,6 +44,9 @@
     },
     "user": {
       "type": "string"
+    },
+    "type": {
+      "type": "string"
     }
   }
 }

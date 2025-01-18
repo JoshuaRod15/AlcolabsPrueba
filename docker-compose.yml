@@ -1,41 +1,35 @@
-version: '3.8'
+version: '3.9'
+
 services:
-  strapi:
-    build:
-      context: ./AlcolabsStrapi
-    image: alcolabsstrapi 
-    environment:
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      NODE_ENV: ${NODE_ENV}
-    ports:
-      - "1337:1337"
-    depends_on:
-      - postgres
-
-  express:
-    build: ./APIREST
-    environment:
-      STRAPI_URL: http://strapi:1337/api
-      NODE_ENV: ${NODE_ENV}
-    ports:
-      - "4000:4000"
-    depends_on:
-      - strapi
-
   postgres:
     image: postgres:13
+    container_name: postgres_container
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5433:5432"  # Puerto expuesto en tu máquina local
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  alcolabs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alcolabs-app
+    environment:
+      DATABASE_HOST: postgres  # Cambio aquí: conecta usando el nombre del servicio
+      DATABASE_PORT: 5432  # Puerto del contenedor de PostgreSQL
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_SSL: "false"
     ports:
-      - "5433:5432"
+      - "1337:1337"
+      - "4000:4000"
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:

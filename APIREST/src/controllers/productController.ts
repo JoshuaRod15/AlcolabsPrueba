@@ -68,9 +68,11 @@ export const getProductFromStrapi = async (req: Request, res: Response): Promise
 
 
 export const createProductInStrapi = async (req: Request, res: Response): Promise<void> => {
-    const { name, description, price, barcode, stock, inventoryAlert, inventoryAlertCount, category, customFeatures} = req.body.data;
+    const {nombre, descripcion, tipo, precio, sku, cantidad, alerta, categoria, variantes} = req.body.data
+    //const { name, description,type, price, barcode, stock, inventoryAlert, inventoryAlertCount, category, customFeatures} = req.body.data;
     const {userId} = req.params
     const token = req.headers['authorization']; 
+
     
     const user = String(userId)
     if (!token) {
@@ -82,18 +84,21 @@ export const createProductInStrapi = async (req: Request, res: Response): Promis
         // Preparar los datos para enviar a Strapi
         const productData = {
             data: {
-                name,
-                description,
-                price,
-                barcode,
-                stock,
-                inventoryAlert,
-                inventoryAlertCount,
+                name:nombre,
+                description:descripcion,
+                price:precio,
+                barcode:sku,
+                stock:cantidad,
+                inventoryAlert:true,
+                inventoryAlertCount:alerta,
                 user,
-                category: {connect: category},
-                customFeatures: customFeatures
+                type:tipo,
+                category: {connect: categoria},
+                customFeatures: variantes
             }
         };
+
+        
 
         // Opciones de encabezado, incluyendo el token de autenticación si es necesario
         const config = {
@@ -112,7 +117,7 @@ export const createProductInStrapi = async (req: Request, res: Response): Promis
         });
     } catch (error:any) {
         console.error('Error al crear producto en Strapi:', error);
-        res.status(500).json({ error: 'Error al crear el producto en Strapi' });
+        res.status(error.status).json({ error: `Error al crear el producto en Strapi ${error}`, });
     }
 }; 
 

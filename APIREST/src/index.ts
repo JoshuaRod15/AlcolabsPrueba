@@ -4,10 +4,13 @@ import productRoutes from './routes/productRoutes';
 import { config as dotenvConfig} from 'dotenv';
 import invoiceRoutes from './routes/invoiceRoutes'
 import authRoutes from './routes/authRoutes'
+import cors from 'cors'
 dotenvConfig({path: '.env'})
 const app = express();
 
 const PORT = process.env.PORT;
+
+app.use(cors())
 
 app.use(express.json());
 
