@@ -1,35 +1,46 @@
 version: '3.9'
-
 services:
-  postgres:
-    image: postgres:13
-    container_name: postgres_container
-    environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
-    ports:
-      - "5433:5432"  # Puerto expuesto en tu máquina local
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  alcolabs:
+  # Servicio para Strapi
+  strapi:
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: alcolabs-app
-    environment:
-      DATABASE_HOST: postgres  # Cambio aquí: conecta usando el nombre del servicio
-      DATABASE_PORT: 5432  # Puerto del contenedor de PostgreSQL
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_SSL: "false"
+      context: ./AlcolabsStrapi # Ruta al Dockerfile de tu aplicación Strapi
+    container_name: strapi_app_dep
     ports:
       - "1337:1337"
-      - "4000:4000"
+    environment:
+      DATABASE_CLIENT: "postgres"
+      DATABASE_HOST: "postgres-db"
+      DATABASE_PORT: 5432
+      DATABASE_NAME: "strapi"
+      DATABASE_USERNAME: "strapi_user"
+      DATABASE_PASSWORD: "strapi_password"
     depends_on:
-      - postgres
+      - postgres-db
+
+  # Servicio para Express
+  express:
+    build:
+      context: ./APIREST # Ruta al Dockerfile de tu aplicación Express
+    container_name: express_app_dep
+    ports:
+      - "4000:4000"
+    environment:
+      STRAPI_URL: "http://strapi:1337/api" # URL interna para conectarse a Strapi
+    depends_on:
+      - strapi
+
+  # Servicio de PostgreSQL
+  postgres-db:
+    image: postgres:15
+    container_name: postgres_db_dep
+    environment:
+      POSTGRES_USER: "strapi_user"
+      POSTGRES_PASSWORD: "strapi_password"
+      POSTGRES_DB: "strapi"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
 
 volumes:
-  postgres_data:
+  postgres-data:

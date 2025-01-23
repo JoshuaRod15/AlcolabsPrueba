@@ -47,6 +47,9 @@
     },
     "type": {
       "type": "string"
+    },
+    "weight": {
+      "type": "string"
     }
   }
 }

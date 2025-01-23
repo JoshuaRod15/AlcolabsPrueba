@@ -466,6 +466,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     user: Schema.Attribute.String;
+    weight: Schema.Attribute.String;
   };
 }
 

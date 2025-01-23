@@ -7,7 +7,9 @@ dotenvConfig({path: '.env'})
 const STRAPI_URL = process.env.STRAPI_URL;
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-    const { identifier, password } = req.body; // Recibe el email o username y la contraseña del usuario
+    const { identifier, password } = req.body; 
+    console.log(identifier, password);
+    // Recibe el email o username y la contraseña del usuario
     try {
         // Enviar la solicitud de autenticación a Strapi
         const response:any = await axios.post(`${STRAPI_URL}/auth/local`, {

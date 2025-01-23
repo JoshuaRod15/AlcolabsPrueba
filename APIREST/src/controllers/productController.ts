@@ -6,14 +6,16 @@ dotenvConfig({path: '.env'})
 const STRAPI_URL = process.env.STRAPI_URL;
 
 export const getAllProductsStrapi = async (req: Request, res: Response) => {
+    
     const {userId} = req.params
     const token = req.headers['authorization']; 
-
+    console.log(`token prueba: ${token}`);
+    
     try {
         // Realiza la solicitud GET al endpoint de productos en Strapi
         const response = await axios.get(`${STRAPI_URL}/products`, {
             headers: {
-                //'Authorization': `Bearer ${process.env.STRAPI_API_TOKEN}`, // Si Strapi usa autenticación JWT
+                Authorization: token, // Si Strapi usa autenticación JWT
                 'Content-Type': 'application/json',
             },
             params:{
@@ -68,11 +70,10 @@ export const getProductFromStrapi = async (req: Request, res: Response): Promise
 
 
 export const createProductInStrapi = async (req: Request, res: Response): Promise<void> => {
-    const {nombre, descripcion, tipo, precio, sku, cantidad, alerta, categoria, variantes} = req.body.data
+    const {nombre, descripcion, tipo, precio, sku, cantidad, alerta, categoria, variantes, peso} = req.body.data
     //const { name, description,type, price, barcode, stock, inventoryAlert, inventoryAlertCount, category, customFeatures} = req.body.data;
     const {userId} = req.params
     const token = req.headers['authorization']; 
-
     
     const user = String(userId)
     if (!token) {
@@ -93,6 +94,7 @@ export const createProductInStrapi = async (req: Request, res: Response): Promis
                 inventoryAlertCount:alerta,
                 user,
                 type:tipo,
+                weight:peso,
                 category: {connect: categoria},
                 customFeatures: variantes
             }
